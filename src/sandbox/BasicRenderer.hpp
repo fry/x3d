@@ -4,6 +4,8 @@
 namespace x3d {
   class BasicRenderer {
   public:
+    virtual void initialize(int width, int height) = 0;
+
     virtual void begin() = 0;
     virtual void end() = 0;
 

@@ -76,20 +76,20 @@ void setup_opengl(x3d::BasicRenderer* renderer) {
 }
 
 int main(int argc, char* argv[]) {
-  x3d::BasicDevice* device = new x3d::Win32Device(24, 800, 600, "Device/Driver Interface Test", true);
-  device->set_resizeable(false);
-  setup_opengl(device->get_renderer());
-
+  x3d::BasicDevice* device = new x3d::Win32Device(x3d::RENDERER_DIRECTX);
+  device->initialize(24, 800, 600, "Device/Driver Interface Test");
+  device->set_resizeable(true);
+  //setup_opengl(device->get_renderer());
   float rot = 0.0;
   while (device->run()) {
     rot += 0.9f;
     device->get_renderer()->begin();
-    glLoadIdentity();
+    /*glLoadIdentity();
     glTranslatef(0, 0, -5);
     glRotatef(rot, 0, 0, 1);
     glTranslatef(0, 2, 0);
     glRotatef(-rot, 0, 0, 1);
-    draw_sphere(1, 40);
+    draw_sphere(1, 40);*/
     device->get_renderer()->end();
   }
 

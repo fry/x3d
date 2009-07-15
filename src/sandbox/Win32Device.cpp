@@ -1,5 +1,6 @@
 #include "Win32Device.hpp"
 #include "Win32OpenGLRenderer.hpp"
+#include "DirectXRenderer.hpp"
 
 #include <string>
 #include <map>
@@ -10,7 +11,7 @@
 std::map<HWND, x3d::Win32Device*> g_devices;
 
 LRESULT CALLBACK WndProc(HWND hwnd, unsigned int msg, WPARAM wparam, LPARAM lparam) {
-  x3d::Win32Device* dev;// = g_devices[hwnd];
+  x3d::Win32Device* dev = g_devices[hwnd];
   switch(msg) {
     case WM_CLOSE:
       DestroyWindow(hwnd);
@@ -30,9 +31,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, unsigned int msg, WPARAM wparam, LPARAM lpar
   return 0;
 }
 
-x3d::Win32Device::Win32Device(int color_bits, int width, int height, const std::string& name,
-                              bool resizeable) {
-  static const char* class_name = "Win32Window";
+x3d::Win32Device::Win32Device(x3d::RendererType renderer_type): m_renderer_type(renderer_type) {
+}
+
+void x3d::Win32Device::initialize(int color_bits, int width, int height, const std::string& name) {
+  static const char* class_name = "x3dWin32Window";
   WNDCLASSEX wc;
 
   HINSTANCE hinstance = GetModuleHandle(0);
@@ -58,12 +61,13 @@ x3d::Win32Device::Win32Device(int color_bits, int width, int height, const std::
   DWORD style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 
   // TODO:
-  if (resizeable)
-    style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
+  /*if (resizeable)
+    style |= WS_THICKFRAME | WS_MAXIMIZEBOX;*/
   /*if (fullscreen)
     style = WS_POPUP;*/
 
   RECT client_size;
+  GetClientRect(m_hwnd, &client_size);
   client_size.left = 0;
   client_size.top = 0;
   client_size.right = width;
@@ -95,8 +99,13 @@ x3d::Win32Device::Win32Device(int color_bits, int width, int height, const std::
   ShowWindow(m_hwnd, SW_SHOW);
   UpdateWindow(m_hwnd);
 
-  // Load renderer
-  m_renderer.reset(new x3d::Win32OpenGLRenderer(m_hwnd, color_bits, width, height));
+  if (m_renderer_type == x3d::RENDERER_OPENGL) {
+    m_renderer.reset(new x3d::Win32OpenGLRenderer(m_hwnd, color_bits));
+  } else if (m_renderer_type == x3d::RENDERER_DIRECTX) {
+    m_renderer.reset(new x3d::DirectXRenderer(m_hwnd));
+  }
+
+  m_renderer->initialize(width, height);
 }
 
 bool x3d::Win32Device::run() {
@@ -113,7 +122,7 @@ bool x3d::Win32Device::run() {
   return !quit;
 }
 
-void x3d::Win32Device::set_window_name(const std::string& name) {
+void x3d::Win32Device::set_title(const std::string& name) {
   SetWindowTextA(m_hwnd, name.c_str());
 }
 
@@ -131,11 +140,9 @@ void x3d::Win32Device::set_resizeable(bool resizeable) {
   // Apply new style
   SetWindowLong(m_hwnd, GWL_STYLE, style);
 
+  // Retrieve current size
   RECT client_size;
-  client_size.left = 0;
-  client_size.top = 0;
-  client_size.right = get_renderer()->get_screen_width();
-  client_size.bottom = get_renderer()->get_screen_height();
+  GetClientRect(m_hwnd, &client_size);
 
   // Determine window size from client area size;
   AdjustWindowRect(&client_size, style, false);

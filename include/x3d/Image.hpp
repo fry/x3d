@@ -11,7 +11,7 @@ namespace x3d {
     int m_width, m_height, m_channels;
     unsigned int m_size;
   public:
-    std::vector<unsigned char> m_buffer;
+    std::vector<unsigned char> buffer;
 
     Image(int channels, int width, int height);
 
