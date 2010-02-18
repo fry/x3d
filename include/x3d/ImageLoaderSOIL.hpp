@@ -1,5 +1,4 @@
-#ifndef X3D_IMAGELOADERSOIL_HPP_
-#define X3D_IMAGELOADERSOIL_HPP_
+#pragma once
 
 #include "x3d/ImageLoader.hpp"
 
@@ -10,5 +9,3 @@ namespace x3d {
     x3d::Image* load(const boost::filesystem::path& file_name);
   };
 }
-
-#endif

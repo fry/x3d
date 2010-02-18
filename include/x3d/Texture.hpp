@@ -1,27 +1,18 @@
-#ifndef TEXTURE_HPP_
-#define TEXTURE_HPP_
-
-#include <map>
-#include <string>
-#include <boost/filesystem/path.hpp>
+#pragma once
 
 namespace x3d {
-  class Image;
-  class Texture {
-  protected:
-    unsigned int m_id;
-    int m_width, m_height, m_channels;
-  public:
-    Texture() {}
-    Texture(x3d::Image& image);
-    ~Texture();
 
-    void bind();
+class Texture {
+protected:
+  int m_width, m_height, m_channels;
+public:
+  virtual ~Texture() {};
 
-    int get_width();
-    int get_height();
-    int get_channels();
-  };
+  virtual void bind() = 0;
+
+  int get_width();
+  int get_height();
+  int get_channels();
+};
+
 }
-
-#endif

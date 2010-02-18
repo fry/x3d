@@ -1,8 +1,6 @@
-#ifndef IMAGE_HPP_
-#define IMAGE_HPP_
+#pragma once
 
 #include <vector>
-#include <boost/filesystem/path.hpp>
 #include <x3d/Color.hpp>
 
 namespace x3d {
@@ -22,5 +20,3 @@ namespace x3d {
     unsigned int get_size();
   };
 }
-
-#endif

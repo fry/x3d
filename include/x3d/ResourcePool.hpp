@@ -31,10 +31,10 @@ template <typename T>
 typename x3d::ResourcePool<T>::resource_type_ptr
 x3d::ResourcePool<T>::get(const boost::filesystem::path& file_name) {
   typename resource_map_type::iterator it = m_resources.find(file_name.string());
+  // Load the file if it's not found
   if (it == m_resources.end())
     return load(file_name);
 
-  // TODO: what
   return it->second;
 }
 

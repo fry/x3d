@@ -1,9 +1,7 @@
-#ifndef X3D_IMAGELOADER_HPP_
-#define X3D_IMAGELOADER_HPP_
+#pragma once
 
 #include <boost/filesystem/path.hpp>
-
-#include "Texture.hpp"
+#include "x3d/Image.hpp"
 
 namespace x3d {
   class ImageLoader {
@@ -17,5 +15,3 @@ namespace x3d {
     virtual ~ImageLoader() {}
   };
 }
-
-#endif

@@ -92,8 +92,8 @@ namespace x3d {
         for (unsigned short c = 0; c < 4; c ++) {
           T value = 0;
           for (unsigned short k = 0; k < 4; k ++)
-            value += at(r, k) * rhs.at(k, c);
-          m.at(r, c) = value;
+            value += at(k, r) * rhs.at(c, k);
+          m.at(c, r) = value;
         }
       }
       return m;
@@ -289,6 +289,47 @@ namespace x3d {
       return *this;
     }
 
+/*
+    ROTATION MATRIX
+      Sets the matrix to a rotation matrix rotated around each axis by the
+      values of each component
+*/
+    x3d::Matrix4<T>& set_rotation(x3d::Vector3<T> v) {
+      x3d::Matrix4f rot_x; rot_x.set_rotation_x(v.x);
+      x3d::Matrix4f rot_y; rot_y.set_rotation_y(v.y);
+      x3d::Matrix4f rot_z; rot_z.set_rotation_z(v.z);
+
+      *this = (rot_x * rot_y) * rot_z;
+
+      return *this;
+    }
+
+/*
+    ORTHOGONAL MATRIX
+      Sets the matrix to a perspective matrix that describes parallel
+      projection
+*/
+    x3d::Matrix4<T>& set_ortho(T left,   T right,
+                               T bottom, T top,
+                               T z_near, T z_far) {
+      const T tx = - (right + left) / (right - left);
+      const T ty = - (top + bottom) / (top - bottom);
+      const T tz = - (z_far + z_near) / (z_far - z_near);
+
+      set_zero();
+
+      at(0, 0) = 2.0 / (right - left);
+      at(1, 1) = 2.0 / (top - bottom);
+      at(2, 2) = -2.0 / (z_far - z_near);
+
+      at(3, 0) = tx;
+      at(3, 1) = ty;
+      at(3, 2) = tz;
+      at(3, 3) = 1;
+
+      return *this;
+    }
+
     std::string serialize() {
       boost::format frm = boost::format(
 "\
@@ -305,6 +346,7 @@ namespace x3d {
     }
     // Automatic type conversion when required
     operator T*() { return &at(0, 0); }
+    operator const T*() const { return &at(0, 0); }
   private:
     T m_fields[4 * 4];
   };
