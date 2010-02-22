@@ -1,9 +1,9 @@
 #if defined(__WIN32__)
   #define WIN32_LEAN_AND_MEAN
   #include <windows.h>
-  #include <gl/gl.h>
+  #include <gl/glew.h>
 #else
-  #include <gl/gl.h>
+  #include <gl/glew.h>
 #endif
 
 #include "x3d/OpenGLRenderer.hpp"
@@ -39,6 +39,11 @@ namespace {
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
   }
+
+  static const char* extension_requirements[] = {
+    "GL_ARB_vertex_buffer_object",
+    0
+  };
 }
 
 using namespace x3d::Core;
@@ -74,6 +79,26 @@ void OpenGLRenderer::initialize(int width, int height) {
 
   m_screen_width = width;
   m_screen_height = height;
+
+
+  // Initialize glew
+  GLenum ret = glewInit();
+
+  if (GLEW_OK != ret) {
+    log().errorStream() << "Error initializing GLEW: " << glewGetErrorString(ret);
+  }
+
+  // Confirm required extensions are supported
+  const char** ext = extension_requirements;
+  while (*ext) {
+    if (glewIsSupported(*ext)) {
+      log().infoStream() << *ext << " supported";
+    } else {
+      log().errorStream() << *ext << " NOT supported";
+    }
+
+    ext ++;
+  }
 }
 
 void OpenGLRenderer::set_matrix_projection(const x3d::Matrix4f& mat) {
