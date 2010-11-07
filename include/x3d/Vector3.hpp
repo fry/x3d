@@ -3,7 +3,7 @@
 
 #include <boost/format.hpp>
 #include <string>
-#include "Math.hpp"
+#include <x3d/Math.hpp>
 
 namespace x3d {
   template<class T> class Vector3;
